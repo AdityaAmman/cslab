@@ -1,0 +1,14 @@
+import cv2
+import numpy as np
+
+# Load and convert images to grayscale, resizing imageB if needed
+imageA = cv2.imread(r'C:\Users\datta\OneDrive\Desktop\Kinadmiral\Rand\prac\testi.png', cv2.IMREAD_GRAYSCALE)
+imageB = cv2.imread(r'C:\Users\datta\OneDrive\Desktop\Kinadmiral\Rand\prac\testit.png', cv2.IMREAD_GRAYSCALE)
+
+if imageA is not None and imageB is not None:
+    imageB = cv2.resize(imageB, (imageA.shape[1], imageA.shape[0]))
+    mse = np.mean((imageA - imageB) ** 2)
+    psnr = 20 * np.log10(255 / np.sqrt(mse)) if mse != 0 else float('inf')
+    print("PSNR:", psnr, "dB")
+else:
+    print("Error: Could not load images.")
