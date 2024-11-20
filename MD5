@@ -1,0 +1,43 @@
+Server:
+
+import socket
+import hashlib
+
+def md5enc(data):
+  enc=hashlib.md5(data).hexdigest()
+  return enc
+
+def start_server():
+  server_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  server_socket.bind(('localhost',8082))
+  server_socket.listen()
+  print("Server is listening on Port 8082")
+
+
+  while True:
+    client_socket,addr=server_socket.accept()
+    data=client_socket.recv(1024).decode('utf-8')
+    print("Received Plain Text: ",data)
+    enc=md5enc(data.encode())
+    client_socket.sendall(enc.encode('utf-8'))
+    print("Sending encrypted data to client...")
+    client_socket.close()
+
+if __name__=="__main__":
+  start_server()
+
+Client:
+
+import socket
+
+def start_client():
+  client_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  client_socket.connect(('localhost',8082))
+  data=input("Enter data to Encrypt: ")
+  client_socket.sendall(data.encode('utf-8'))
+
+  enc=client_socket.recv(1024).decode('utf-8')
+  print("Encrypted data is:",enc)
+
+if __name__=="__main__":
+  start_client()
