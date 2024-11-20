@@ -1,0 +1,43 @@
+#Server:
+
+import socket
+
+def cs(text,shift):
+  cipher_text = ''.join([chr(((ord(c) - 65 + shift) % 26) + 65) if c.isupper() else chr(((ord(c) - 97 + shift) % 26) + 97) if c.islower() else c for c in text])
+  return cipher_text
+
+
+def start_server():
+  server_socket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  server_socket.bind(('localhost',8082))
+  server_socket.listen()
+  print("Server is listening!")
+  shift=3
+
+  while True:
+    client_socket,addr=server_socket.accept()
+    print(f"Connection from {addr} is established")
+    data=client_socket.recv(1024).decode('utf-8')
+    cd=cs(data,shift)
+    client_socket.sendall(cd.encode('utf-8'))
+    client_socket.close()
+    
+if __name__=="__main__":
+    start_server()
+
+#Client:
+
+import socket
+
+def start_client():
+  client_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  client_socket.connect(('localhost',8082))
+  data="Hello World!"
+  client_socket.sendall(data.encode('utf-8'))
+  print("Client socket has sent data!")
+
+  enc=client_socket.recv(1024).decode('utf-8')
+  print("Encrypted Data is: ",enc)
+
+if __name__=="__main__":
+  start_client()
