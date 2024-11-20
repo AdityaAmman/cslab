@@ -1,0 +1,52 @@
+Server:
+
+import socket
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad,unpad
+
+def des(data,key):
+  p1=DES.new(key,DES.MODE_ECB)
+  dec=unpad(p1.decrypt(data),DES.block_size)
+  return dec
+
+def start_server():
+  key=b'8bytekey'
+  server_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  server_socket.bind(('localhost',8082))
+  server_socket.listen()
+  print("Server is listening on port 8082...")
+  
+  while True:
+    client_socket,addr=server_socket.accept()
+    data=client_socket.recv(1024)
+    dec=des(data,key)
+    print("The Decrypted data is: ",dec.decode())
+    client_socket.close()
+
+if __name__=="__main__":
+  start_server()
+
+Client:
+
+import socket
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad,unpad
+
+def des(data,key):
+  p1=DES.new(key,DES.MODE_ECB)
+  dec=p1.encrypt(pad(data,DES.block_size))
+  return dec
+
+def start_client():
+  key=b'8bytekey'
+  client_socket=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+  client_socket.connect(('localhost',8082))
+  data=input("Enter data to Encrypt: ")
+  encdata=des(data.encode('utf-8'),key)
+  print("Encrypted data is: ",encdata)
+  client_socket.sendall(encdata)
+
+  client_socket.close()
+
+if __name__=="__main__":
+  start_client()
